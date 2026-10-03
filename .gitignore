@@ -6,6 +6,7 @@ __pycache__/
 
 # Environment & Secrets
 venv/
+.venv/
 .env
 .env.*
 !.env.example
@@ -15,6 +16,7 @@ venv/
 
 # Project specific caches/data
 summarized_news.json
+subscribers.json
 Summarized_news/
 
 # OS specific files

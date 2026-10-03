@@ -9,13 +9,14 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from News_Agents.bbc_news_agent import NewsScraper as BBCScraper
 from News_Agents.cnn_news_agent import NewsScraper as CNNScraper
 from News_Agents.youtube_news_agent import YoutubeNewsAgent
+from News_Agents.google_news_agent import GoogleNewsScraper
 
 def fetch_and_process_data():
     unified_data = []
 
     print("Fetching BBC News...")
     bbc_scraper = BBCScraper()
-    bbc_articles = bbc_scraper.get_bbc_news(limit=3)
+    bbc_articles = bbc_scraper.get_bbc_news(limit=7)
     for art in bbc_articles:
         unified_data.append({
             "source": f"BBC",
@@ -26,7 +27,7 @@ def fetch_and_process_data():
 
     print("Fetching CNN News...")
     cnn_scraper = CNNScraper()
-    cnn_articles = cnn_scraper.get_cnn_news(limit=3)
+    cnn_articles = cnn_scraper.get_cnn_news(limit=7)
     for art in cnn_articles:
         unified_data.append({
             "source": f"CNN",
@@ -46,6 +47,24 @@ def fetch_and_process_data():
     processed_data = preprocess_data(unified_data)
     
     return processed_data
+
+def fetch_genre_data(genres: List[str]) -> Dict[str, List[Dict[str, str]]]:
+    genre_data = {}
+    scraper = GoogleNewsScraper()
+    for genre in genres:
+        print(f"Fetching Google News for Genre: {genre}...")
+        articles = scraper.get_news_by_genre(genre, limit=7)
+        unified_data = []
+        for art in articles:
+            unified_data.append({
+                "source": art.source,
+                "title": art.title,
+                "url": art.url,
+                "content": art.content
+            })
+        genre_data[genre] = preprocess_data(unified_data)
+        
+    return genre_data
 
 def preprocess_data(data: List[Dict[str, str]]) -> List[Dict[str, str]]:
     seen_titles = set()
@@ -72,6 +91,7 @@ def preprocess_data(data: List[Dict[str, str]]) -> List[Dict[str, str]]:
         cleaned_item = {
             "source": item["source"],
             "title": title,
+            "url": item.get("url", ""),
             "content": content
         }
         cleaned_data.append(cleaned_item)

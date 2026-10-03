@@ -7,7 +7,5 @@ langchain
 langchain-groq
 langsmith
 python-dotenv
-mcp
-fastmcp
 fastapi
 uvicorn

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsCraft - Subscribe</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Animated Mesh Gradient Background */
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #0f172a);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Abstract glowing orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.5;
+            animation: float 10s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: #8b5cf6;
+            top: -50px;
+            left: -50px;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: #3b82f6;
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(30px) scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3.5rem 3rem;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            font-size: 3rem;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-weight: 300;
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            outline: none;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        .dropdown {
+            position: relative;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .dropdown-button:hover, .dropdown.active .dropdown-button {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            margin-top: 8px;
+            padding: 12px 0;
+            z-index: 100;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar styles */
+        .dropdown-content::-webkit-scrollbar { width: 6px; }
+        .dropdown-content::-webkit-scrollbar-track { background: transparent; }
+        .dropdown-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .dropdown.active .dropdown-content {
+            display: block;
+            animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.9);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-label:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .checkbox-label input {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            margin-right: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .checkbox-label input:checked {
+            background: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+
+        .checkbox-label input:checked::after {
+            content: '✔';
+            position: absolute;
+            color: white;
+            font-size: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .arrow {
+            border: solid rgba(255,255,255,0.6);
+            border-width: 0 2px 2px 0;
+            display: inline-block;
+            padding: 4px;
+            transform: rotate(45deg);
+            transition: transform 0.3s ease;
+        }
+        
+        .dropdown.active .arrow {
+            transform: rotate(-135deg) translate(-2px, -2px);
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button.submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 0;
+        }
+
+        button.submit-btn span, button.submit-btn .loader {
+            position: relative;
+            z-index: 1;
+        }
+
+        button.submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 25px -10px rgba(139, 92, 246, 0.6);
+        }
+
+        button.submit-btn:hover::before {
+            opacity: 1;
+        }
+
+        button.submit-btn:active {
+            transform: translateY(1px);
+        }
+
+        .message {
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            min-height: 24px;
+            font-weight: 500;
+        }
+        
+        .message.show { opacity: 1; }
+        .message.success { color: #6ee7b7; }
+        .message.error { color: #fca5a5; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loader {
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            display: none;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+    <!-- Floating abstract background orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <h1>NewsCraft</h1>
+        <p class="subtitle">AI-curated news delivered straight to your inbox every 24 hours. Minimal noise, pure signal.</p>
+        
+        <form id="subscribeForm">
+            <div class="form-group">
+                <input type="email" id="emailInput" placeholder="Enter your email address" required>
+            </div>
+            
+            <div class="dropdown" id="genreDropdown">
+                <div class="dropdown-button" id="dropdownBtn">
+                    <span id="dropdownText">Select Topics (Default: Top News)</span>
+                    <i class="arrow"></i>
+                </div>
+                <div class="dropdown-content">
+                    <label class="checkbox-label"><input type="checkbox" name="genre" value="Politics"> Politics</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genre" value="Sports"> Sports</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genre" value="AI"> AI</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genre" value="Tech"> Tech</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genre" value="Business"> Business</label>
+                    <label class="checkbox-label"><input type="checkbox" name="genre" value="Entertainment"> Entertainment</label>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn" class="submit-btn">
+                <span id="btnText">Subscribe Now</span>
+                <div class="loader" id="loader"></div>
+            </button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        const dropdown = document.getElementById('genreDropdown');
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const dropdownText = document.getElementById('dropdownText');
+        const checkboxes = document.querySelectorAll('input[name="genre"]');
+
+        dropdownBtn.addEventListener('click', () => {
+            dropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const selected = Array.from(checkboxes).filter(i => i.checked).map(i => i.value);
+                if (selected.length === 0) {
+                    dropdownText.textContent = "Select Topics (Default: Top News)";
+                } else if (selected.length <= 2) {
+                    dropdownText.textContent = selected.join(', ');
+                } else {
+                    dropdownText.textContent = `${selected.length} topics selected`;
+                }
+            });
+        });
+
+        // Pre-fill email from URL if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlEmail = urlParams.get('email');
+        if (urlEmail) {
+            document.getElementById('emailInput').value = urlEmail;
+        }
+
+        document.getElementById('subscribeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('emailInput').value;
+            const genreCheckboxes = document.querySelectorAll('input[name="genre"]:checked');
+            const genres = Array.from(genreCheckboxes).map(cb => cb.value);
+            
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loader');
+            const messageEl = document.getElementById('message');
+            
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            loader.style.display = 'inline-block';
+            messageEl.classList.remove('show', 'success', 'error');
+            
+            try {
+                const response = await fetch('/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, genres })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    messageEl.textContent = "Welcome aboard! Check your inbox for a confirmation. Your first brief arrives at 8:00 AM.";
+                    messageEl.classList.add('success', 'show');
+                    document.getElementById('emailInput').value = '';
+                } else {
+                    messageEl.textContent = data.detail || "Something went wrong. Please try again.";
+                    messageEl.classList.add('error', 'show');
+                }
+            } catch (error) {
+                messageEl.textContent = "Network error. Please try again later.";
+                messageEl.classList.add('error', 'show');
+            } finally {
+                btn.disabled = false;
+                btnText.style.display = 'inline-block';
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

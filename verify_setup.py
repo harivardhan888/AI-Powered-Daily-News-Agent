@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 def check_env():
     load_dotenv()
-    print("=== NewsLens AI Readiness Check ===\n")
+    print("=== NewsCraft Readiness Check ===\n")
     
     # 1. Check Groq
     groq_key = os.getenv("GROQ_API_KEY")
@@ -15,7 +15,7 @@ def check_env():
             # Try a very small completion
             client.chat.completions.create(
                 messages=[{"role": "user", "content": "hi"}],
-                model="llama-3.1-8b-instant",
+                model="qwen/qwen3.8-27b",
                 max_tokens=5
             )
             print("[✅] GROQ_API_KEY is valid.")
@@ -31,14 +31,6 @@ def check_env():
         print(f"[✅] Email configured for: {gmail_user} (Password hidden)")
     else:
         print("[⚠️] GMAIL configuration is missing.")
-
-    # 3. Check Dependencies
-    try:
-        import mcp
-        import fastmcp
-        print("[✅] MCP dependencies are installed.")
-    except ImportError:
-        print("[❌] MCP dependencies missing. Run: pip install mcp fastmcp")
 
     print("\nCheck complete!")
 
