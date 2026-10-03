@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 load_dotenv()
 
@@ -170,20 +171,26 @@ def main():
         print("No articles to send.")
         return
 
-    # Read subscribers from JSON
-    subscribers_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "subscribers.json")
-    if os.path.exists(subscribers_file):
-        with open(subscribers_file, "r") as f:
-            subscribers = json.load(f)
-    else:
-        subscribers = []
-        
+    # Connect to MongoDB
+    mongo_uri = os.environ.get("MONGODB_URI")
+    subscribers = []
+    
+    if mongo_uri:
+        try:
+            client = MongoClient(mongo_uri)
+            db = client.newscraft
+            subs_cursor = db.subscribers.find({})
+            for sub in subs_cursor:
+                subscribers.append(sub)
+        except Exception as e:
+            print(f"[ERROR] Could not connect to MongoDB: {e}")
+            
     # Also support old env recipients
     recipients_str = os.environ.get("RECIPIENT_EMAILS")
     if recipients_str:
-        env_recipients = [email.strip() for email in recipients_str.split(",")]
+        env_recipients = [email.strip() for email in recipients_str.split(",") if email.strip()]
         for er in env_recipients:
-            if not any(sub.get("email") == er if isinstance(sub, dict) else sub == er for sub in subscribers):
+            if not any(sub.get("email") == er for sub in subscribers):
                 subscribers.append({"email": er, "genres": []})
 
     if not subscribers:

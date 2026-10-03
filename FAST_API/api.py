@@ -7,6 +7,8 @@ import os
 import json
 import sys
 from dotenv import load_dotenv
+from pymongo import MongoClient
+import urllib.parse
 
 # Load environments
 load_dotenv()
@@ -93,42 +95,20 @@ def subscribe_user(req: SubscribeRequest, background_tasks: BackgroundTasks):
     if not email or "@" not in email:
         raise HTTPException(status_code=400, detail="Invalid email address")
 
-    subscribers_file = os.path.join(root_dir, "subscribers.json")
+    mongo_uri = os.environ.get("MONGODB_URI")
+    if not mongo_uri:
+        raise HTTPException(status_code=500, detail="Database not configured")
+        
+    client = MongoClient(mongo_uri)
+    db = client.newscraft
+    subscribers_col = db.subscribers
     
-    # Read existing
-    subscribers = []
-    if os.path.exists(subscribers_file):
-        with open(subscribers_file, "r") as f:
-            try:
-                subscribers = json.load(f)
-            except json.JSONDecodeError:
-                subscribers = []
-                
-    # Normalize old strings to dict format for checking
-    normalized_subs = []
-    for sub in subscribers:
-        if isinstance(sub, str):
-            normalized_subs.append({"email": sub, "genres": []})
-        else:
-            normalized_subs.append(sub)
-            
-    # Check if already subscribed and update if so
-    found = False
-    for sub in normalized_subs:
-        if sub["email"] == email:
-            sub["genres"] = req.genres
-            found = True
-            break
-            
-    if not found:
-        normalized_subs.append({
-            "email": email,
-            "genres": req.genres
-        })
-    
-    # Save back
-    with open(subscribers_file, "w") as f:
-        json.dump(normalized_subs, f, indent=4)
+    # Upsert subscriber
+    subscribers_col.update_one(
+        {"email": email},
+        {"$set": {"genres": req.genres}},
+        upsert=True
+    )
         
     # Send welcome email in background
     def send_welcome():
@@ -140,22 +120,11 @@ def subscribe_user(req: SubscribeRequest, background_tasks: BackgroundTasks):
 
 @api.get("/unsubscribe", response_class=HTMLResponse)
 def unsubscribe_user(email: str):
-    subscribers_file = os.path.join(root_dir, "subscribers.json")
-    if os.path.exists(subscribers_file):
-        with open(subscribers_file, "r") as f:
-            try:
-                subscribers = json.load(f)
-            except:
-                subscribers = []
-                
-        # Filter out the email
-        new_subs = [
-            sub for sub in subscribers 
-            if (sub if isinstance(sub, str) else sub.get("email")) != email
-        ]
-        
-        with open(subscribers_file, "w") as f:
-            json.dump(new_subs, f, indent=4)
+    mongo_uri = os.environ.get("MONGODB_URI")
+    if mongo_uri:
+        client = MongoClient(mongo_uri)
+        db = client.newscraft
+        db.subscribers.delete_one({"email": email})
             
     return f"""
     <html>
