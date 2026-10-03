@@ -1,8 +1,6 @@
 import os
 import json
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import requests
 from datetime import datetime
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -81,38 +79,40 @@ def format_email_body(articles, recipient_email):
     return html
 
 def send_email(recipient_email, subject, body_html):
-    sender_email = os.environ.get("GMAIL_USER")
-    sender_password = os.environ.get("GMAIL_APP_PASSWORD")
-
-    if not all([sender_email, sender_password]):
-        print("[ERROR] Missing email configuration in .env file.")
+    brevo_api_key = os.environ.get("BREVO_API_KEY")
+    if not brevo_api_key:
+        print("[ERROR] Missing BREVO_API_KEY in .env file.")
         return
 
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = recipient_email
-    msg['Subject'] = subject
-
-    msg.attach(MIMEText(body_html, 'html'))
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": brevo_api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "sender": {"name": "NewsCraft", "email": os.environ.get("GMAIL_USER", "news.craft.ai@gmail.com")},
+        "to": [{"email": recipient_email}],
+        "subject": subject,
+        "htmlContent": body_html
+    }
 
     try:
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, [recipient_email], msg.as_string())
-        print(f"Email sent successfully to: {recipient_email}")
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code in [201, 200]:
+            print(f"Email sent successfully to: {recipient_email}")
+        else:
+            print(f"[ERROR] Failed to send email to {recipient_email}: {response.text}")
     except Exception as e:
         print(f"[ERROR] Failed to send email to {recipient_email}: {e}")
 
 def send_welcome_email(recipient_email):
-    sender_email = os.environ.get("GMAIL_USER")
-    sender_password = os.environ.get("GMAIL_APP_PASSWORD")
-
-    if not all([sender_email, sender_password]):
-        print("[ERROR] Missing email configuration in .env file.")
+    brevo_api_key = os.environ.get("BREVO_API_KEY")
+    if not brevo_api_key:
+        print("[ERROR] Missing BREVO_API_KEY in .env file.")
         return
 
-    base_url = os.environ.get("BASE_URL", "http://127.0.0.1:8000")
+    base_url = os.environ.get("BASE_URL", "https://ai-powered-daily-news-agent.onrender.com")
     subject = "Welcome to NewsCraft!"
     body_html = f"""
     <html>
@@ -147,18 +147,25 @@ def send_welcome_email(recipient_email):
     </html>
     """
     
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = recipient_email
-    msg['Subject'] = subject
-    msg.attach(MIMEText(body_html, 'html'))
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": brevo_api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "sender": {"name": "NewsCraft", "email": os.environ.get("GMAIL_USER", "news.craft.ai@gmail.com")},
+        "to": [{"email": recipient_email}],
+        "subject": subject,
+        "htmlContent": body_html
+    }
 
     try:
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(sender_email, sender_password)
-            server.sendmail(sender_email, [recipient_email], msg.as_string())
-        print(f"Welcome email sent to {recipient_email}")
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code in [201, 200]:
+            print(f"Welcome email sent to {recipient_email}")
+        else:
+            print(f"[ERROR] Failed to send welcome email to {recipient_email}: {response.text}")
     except Exception as e:
         print(f"[ERROR] Failed to send welcome email: {e}")
 

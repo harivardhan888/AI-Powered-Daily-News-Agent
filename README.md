@@ -14,7 +14,7 @@ graph TD
     B --> C[Preprocessing: Cleaning & De-duplication]
     C --> D[Groq AI: Qwen 3.8 27B Summarization]
     D --> E[Local Data Storage]
-    E --> F[Mail Module: SMTP & HTML Template]
+    E --> F[Mail Module: Brevo REST API & HTML Template]
     F --> G[Recipient Inbox: Daily News Brief]
     
     I[FastAPI Web Server] --> B
@@ -27,8 +27,8 @@ graph TD
 1.  **Stunning Subscription UI**: A high-end, responsive dark-mode web interface for users to subscribe and select their favorite topics (Politics, Sports, AI, Tech, Business, Entertainment).
 2.  **Smart Aggregation**: Simultaneously pulls the latest stories from Google News (by genre), BBC News, CNN, and YouTube Transcripts.
 3.  **AI Summarization Engine**: Leverages **Groq's** high-speed inference (using `qwen/qwen3.8-27b`) and **LangChain** to generate human-like, strictly 3-4 line summaries.
-4.  **Automated Delivery**: Articles are injected into a sleek, mobile-responsive HTML email template (complete with "Read full story" links and unsubscribe preferences) and dispatched via SMTP.
-5.  **Multi-user Support**: Uses a lightweight local database to store user-specific genres and automatically personalizes the newsletter for each user.
+4.  **Automated Delivery**: Articles are injected into a sleek, mobile-responsive HTML email template (complete with "Read full story" links and unsubscribe preferences) and dispatched via the **Brevo REST API** to bypass strict cloud SMTP blockers.
+5.  **Multi-user Support**: Uses a **MongoDB Atlas Cloud Database** to store user-specific genres and automatically personalizes the newsletter for each user.
 
 ## 📂 Project Structure
 
@@ -46,7 +46,8 @@ graph TD
 ### 1. Prerequisites
 *   Python 3.10+ installed.
 *   A **Groq API Key** (for the LLM).
-*   A **Gmail App Password** (for sending emails).
+*   A **Brevo API Key** (for sending emails via REST API).
+*   A **MongoDB Atlas Connection URI** (for storing subscribers in the cloud).
 
 ### 2. Installation
 1.  Clone the repository.
