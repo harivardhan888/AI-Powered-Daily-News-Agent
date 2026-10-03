@@ -99,7 +99,8 @@ def subscribe_user(req: SubscribeRequest, background_tasks: BackgroundTasks):
     if not mongo_uri:
         raise HTTPException(status_code=500, detail="Database not configured")
         
-    client = MongoClient(mongo_uri)
+    import certifi
+    client = MongoClient(mongo_uri, tlsCAFile=certifi.where())
     db = client.newscraft
     subscribers_col = db.subscribers
     
@@ -122,7 +123,8 @@ def subscribe_user(req: SubscribeRequest, background_tasks: BackgroundTasks):
 def unsubscribe_user(email: str):
     mongo_uri = os.environ.get("MONGODB_URI")
     if mongo_uri:
-        client = MongoClient(mongo_uri)
+        import certifi
+        client = MongoClient(mongo_uri, tlsCAFile=certifi.where())
         db = client.newscraft
         db.subscribers.delete_one({"email": email})
             

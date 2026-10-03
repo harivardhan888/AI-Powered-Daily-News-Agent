@@ -177,7 +177,8 @@ def main():
     
     if mongo_uri:
         try:
-            client = MongoClient(mongo_uri)
+            import certifi
+            client = MongoClient(mongo_uri, tlsCAFile=certifi.where())
             db = client.newscraft
             subs_cursor = db.subscribers.find({})
             for sub in subs_cursor:
