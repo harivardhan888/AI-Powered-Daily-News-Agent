@@ -13,13 +13,13 @@ graph TD
     A[Sources: Google News, BBC, CNN, YouTube] --> B[News Agents Scrapers]
     B --> C[Preprocessing: Cleaning & De-duplication]
     C --> D[Groq AI: Qwen 3.8 27B Summarization]
-    D --> E[Data Storage: summarized_news.json]
+    D --> E[Local Data Storage]
     E --> F[Mail Module: SMTP & HTML Template]
     F --> G[Recipient Inbox: Daily News Brief]
     
     I[FastAPI Web Server] --> B
     I --> F
-    I --> H[subscribers.json]
+    I --> H[Subscriber Database]
 ```
 
 ### Key Features
@@ -28,7 +28,7 @@ graph TD
 2.  **Smart Aggregation**: Simultaneously pulls the latest stories from Google News (by genre), BBC News, CNN, and YouTube Transcripts.
 3.  **AI Summarization Engine**: Leverages **Groq's** high-speed inference (using `qwen/qwen3.8-27b`) and **LangChain** to generate human-like, strictly 3-4 line summaries.
 4.  **Automated Delivery**: Articles are injected into a sleek, mobile-responsive HTML email template (complete with "Read full story" links and unsubscribe preferences) and dispatched via SMTP.
-5.  **Multi-user Support**: Uses `subscribers.json` to store user-specific genres and automatically personalizes the newsletter for each user.
+5.  **Multi-user Support**: Uses a lightweight local database to store user-specific genres and automatically personalizes the newsletter for each user.
 
 ## 📂 Project Structure
 
@@ -39,7 +39,7 @@ graph TD
 *   `News_Agents/`: Specialized scrapers.
 *   `Preprocessing/`: Data cleaning, formatting, and deduplication logic.
 *   `Mail_SMTP/`: Email templating and SMTP delivery system.
-*   `summarized_news.json` & `subscribers.json`: Local cache and database.
+*   `Local Data`: File-based cache and user database.
 
 ## 🛠️ Instructions to Run Locally
 
