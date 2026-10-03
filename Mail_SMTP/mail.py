@@ -95,7 +95,8 @@ def send_email(recipient_email, subject, body_html):
     msg.attach(MIMEText(body_html, 'html'))
 
     try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, [recipient_email], msg.as_string())
         print(f"Email sent successfully to: {recipient_email}")
@@ -152,7 +153,8 @@ def send_welcome_email(recipient_email):
     msg.attach(MIMEText(body_html, 'html'))
 
     try:
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
             server.login(sender_email, sender_password)
             server.sendmail(sender_email, [recipient_email], msg.as_string())
         print(f"Welcome email sent to {recipient_email}")
