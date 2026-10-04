@@ -3,6 +3,7 @@ import sys
 import json
 from typing import List, Dict
 from dotenv import load_dotenv
+from pymongo import MongoClient
 
 # Load environment variables from .env file
 load_dotenv()
@@ -104,18 +105,21 @@ def summarize_articles(articles):
 def main():
     print(">>> PART 1: Fetching Unique Genres...")
     
-    # Get unique genres from subscribers
+    # Get unique genres from subscribers in MongoDB
     unique_genres = set()
-    subscribers_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "subscribers.json")
-    if os.path.exists(subscribers_file):
-        with open(subscribers_file, "r") as f:
-            try:
-                subs = json.load(f)
-                for sub in subs:
-                    if isinstance(sub, dict) and "genres" in sub:
-                        unique_genres.update(sub["genres"])
-            except:
-                pass
+    mongo_uri = os.environ.get("MONGODB_URI")
+    
+    if mongo_uri:
+        try:
+            import certifi
+            client = MongoClient(mongo_uri, tlsCAFile=certifi.where())
+            db = client.newscraft
+            subs_cursor = db.subscribers.find({})
+            for sub in subs_cursor:
+                if "genres" in sub:
+                    unique_genres.update(sub["genres"])
+        except Exception as e:
+            print(f"[ERROR] Could not fetch genres from MongoDB: {e}")
                 
     unique_genres = list(unique_genres)
     
