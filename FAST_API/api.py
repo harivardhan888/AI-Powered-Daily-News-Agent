@@ -50,6 +50,11 @@ def read_root():
     # Return the UI from the static folder
     return FileResponse(os.path.join(os.path.dirname(__file__), "static", "index.html"))
 
+@api.get("/ping")
+def ping():
+    """Tiny endpoint to wake up the server without returning a massive HTML file."""
+    return {"status": "awake"}
+
 @api.get("/news/raw")
 def get_raw_news(api_key: str = Depends(get_api_key)):
     """Fetches news from BBC, CNN, and YouTube without summarizing."""
